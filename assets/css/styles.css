@@ -622,3 +622,151 @@ a {
   max-width: 420px;
   margin: 1.5rem auto 0;
 }
+/* =========================
+   ENVIAR FOTOS / UPLOAD
+   ========================= */
+
+.upload-page {
+  background: #f9f3ff;
+}
+
+/* HERO COM FOTO DO ANFITRIÃO */
+.upload-hero {
+  position: relative;
+  height: 280px;
+  background-image: url("../img/anfitriao-larissa.jpg"); /* ajuste o nome se for diferente */
+  background-size: cover;
+  background-position: center;
+  border-radius: 0 0 40px 40px;
+  overflow: hidden;
+}
+
+.upload-overlay {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(35, 0, 60, 0.8),
+    rgba(104, 0, 150, 0.4),
+    rgba(255, 255, 255, 0.1)
+  );
+  display: flex;
+  align-items: center;
+}
+
+.upload-hero-inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.upload-hero-text {
+  max-width: 480px;
+  color: #fff;
+}
+
+.upload-hero-text h1 {
+  font-size: 2.4rem;
+  margin-bottom: 8px;
+}
+
+/* subtítulo só do hero de upload */
+.upload-hero-subtitle {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  margin-bottom: 12px;
+}
+
+/* texto do código do evento */
+.hero-event-code {
+  font-size: 0.95rem;
+}
+
+.hero-event-code strong {
+  font-weight: 600;
+}
+
+/* CARTÃO DE UPLOAD (página enviar-fotos) */
+.upload-card-page {
+  margin-top: -80px;
+  position: relative;
+  z-index: 2;
+}
+
+/* área de upload */
+.upload-drop-area {
+  margin-top: 16px;
+  border: 2px dashed #e3d0f8;
+  border-radius: 20px;
+  padding: 32px 16px;
+  text-align: center;
+  background: #faf6ff;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.upload-drop-area:hover {
+  border-color: #8b3af2;
+  background: #f5ecff;
+  transform: translateY(-1px);
+}
+
+.upload-drop-area.dragover {
+  border-color: #6222cc;
+  background: #f0e4ff;
+}
+
+.upload-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.upload-drop-area .drop-title {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.upload-drop-area .drop-subtitle {
+  font-size: 0.9rem;
+  color: #6e5b75;
+}
+
+.upload-drop-area input[type="file"] {
+  display: none;
+}
+
+.preview-label {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: #6e5b75;
+}
+
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+  color: #2c1230;
+}
+
+.file-list li {
+  padding: 4px 0;
+  border-bottom: 1px solid #f0e4ff;
+}
+
+/* Responsivo do hero de upload */
+@media (max-width: 768px) {
+  .upload-hero {
+    height: 220px;
+    border-radius: 0 0 24px 24px;
+  }
+
+  .upload-hero-text h1 {
+    font-size: 1.8rem;
+  }
+
+  .upload-card-page {
+    margin-top: -60px;
+  }
+}
