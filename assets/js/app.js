@@ -7,9 +7,8 @@ if (menuToggle && nav) {
     nav.classList.toggle("open");
   });
 }
-// ========= CONFIG GERAL =========
-const HOST_ACCESS_CODE = "VXLARI"; // troque para o código que você quiser
-// ========= ACESSO DO ANFITRIÃO =========
+const HOST_ACCESS_CODE = "VXLARI";
+
 const hostAccessForm = document.getElementById("hostAccessForm");
 const hostAccessCodeInput = document.getElementById("hostAccessCode");
 const hostAccessStatus = document.getElementById("hostAccessStatus");
@@ -19,11 +18,9 @@ if (hostAccessForm && hostAccessCodeInput) {
     e.preventDefault();
 
     const code = hostAccessCodeInput.value.trim();
-
     if (!code) return;
 
     if (code === HOST_ACCESS_CODE) {
-      // marca que o anfitrião está autenticado
       localStorage.setItem("photofesta_host_auth", "ok");
 
       hostAccessStatus.textContent = "Tudo certo! Redirecionando...";
@@ -39,6 +36,7 @@ if (hostAccessForm && hostAccessCodeInput) {
     }
   });
 }
+
 
 
 // ========= CRIAR EVENTO / GERAR CÓDIGO =========
