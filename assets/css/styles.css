@@ -632,9 +632,8 @@ a {
 
 .upload-hero {
   height: 260px;
-  background-image: url("../img/anfitriao-larissa.jpg"); /* AJUSTAR AQUI SE O NOME FOR OUTRO */
-  background-size: cover;
-  background-position: center;
+  background: linear-gradient(120deg, #f2ecff, #f9f7ff);
+  /* o JS vai sobrescrever o background-image aqui quando achar o anfitrião */
   position: relative;
   display: flex;
   align-items: center;
@@ -658,7 +657,7 @@ a {
 .upload-hero-sub {
   margin-top: 10px;
   font-size: 1rem;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 /* CARD CENTRAL */
