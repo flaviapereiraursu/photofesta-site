@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Enviar fotos – FotoFesta</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="container header-inner">
+        <div class="logo">FotoFesta</div>
+        <nav class="nav">
+          <a href="index.html">Início</a>
+          <a href="como-funciona.html">Como funciona</a>
+          <a href="criar-evento.html">Criar evento</a>
+          <a href="enviar-fotos.html" class="nav-cta">Enviar fotos</a>
+        </nav>
+        <button class="menu-toggle" id="menuToggle">☰</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="section">
+        <div class="container">
+          <h1 class="section-title">Envie suas fotos e vídeos</h1>
+          <p class="section-subtitle">
+            Escolha os arquivos do seu celular e envie em poucos cliques. Não
+            se preocupe, não vamos alterar nada nos seus arquivos.
+          </p>
+
+          <div class="upload-box">
+            <label for="fileInput" class="drop-area">
+              <p class="drop-title">Arraste suas fotos aqui</p>
+              <p class="drop-subtitle">ou clique para selecionar arquivos</p>
+              <p class="drop-info">Formatos aceitos: JPG, PNG, MP4, MOV</p>
+            </label>
+            <input
+              type="file"
+              id="fileInput"
+              multiple
+              accept="image/*,video/*"
+              style="display: none"
+            />
+
+            <div id="previewArea" class="preview-area">
+              Nenhum arquivo selecionado ainda.
+            </div>
+
+            <button id="uploadButton" class="btn btn-primary">
+              Enviar arquivos
+            </button>
+
+            <p id="uploadStatus" class="upload-status"></p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <!-- footer igual -->
+    </footer>
+
+    <script>
+      const UPLOAD_WEBHOOK_URL = "https://hook.eu2.make.com/SUA_URL_AQUI";
+
+      const fileInput = document.getElementById("fileInput");
+      const dropArea = document.querySelector(".drop-area");
+      const previewArea = document.getElementById("previewArea");
+      const uploadButton = document.getElementById("uploadButton");
+      const statusEl = document.getElementById("uploadStatus");
+
+      // abrir seletor ao clicar na área
+      dropArea.addEventListener("click", () => fileInput.click());
+
+      // pré-visualização simples
+      fileInput.addEventListener("change", () => {
+        const files = Array.from(fileInput.files || []);
+        if (!files.length) {
+          previewArea.textContent = "Nenhum arquivo selecionado ainda.";
+          return;
+        }
+
+        previewArea.innerHTML = "";
+        files.forEach((file) => {
+          const item = document.createElement("div");
+          item.className = "preview-item";
+          item.textContent = file.name;
+          previewArea.appendChild(item);
+        });
+      });
+
+      // envio pro Make
+      uploadButton.addEventListener("click", async () => {
+        const files = Array.from(fileInput.files || []);
+        if (!files.length) {
+          statusEl.textContent = "Selecione pelo menos um arquivo.";
+          statusEl.style.color = "#b3261e";
+          return;
+        }
+
+        statusEl.textContent = "Enviando arquivos, aguarde...";
+        statusEl.style.color = "#6e5b75";
+
+        const formData = new FormData();
+        files.forEach((file, index) => {
+          formData.append("files[]", file, file.name);
+        });
+
+        try {
+          const response = await fetch(UPLOAD_WEBHOOK_URL, {
+            method: "POST",
+            body: formData,
+          });
+
+          if (!response.ok) {
+            throw new Error("Erro no envio");
+          }
+
+          statusEl.textContent = "Arquivos enviados com sucesso! Obrigado 🥰";
+          statusEl.style.color = "#0b7a30";
+          fileInput.value = "";
+          previewArea.textContent = "Nenhum arquivo selecionado ainda.";
+        } catch (err) {
+          statusEl.textContent =
+            "Não foi possível enviar agora. Tente novamente em instantes.";
+          statusEl.style.color = "#b3261e";
+        }
+      });
+    </script>
+
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>

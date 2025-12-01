@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Criar evento – FotoFesta</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header">
+      <div class="container header-inner">
+        <div class="logo">FotoFesta</div>
+        <nav class="nav">
+          <a href="index.html">Início</a>
+          <a href="como-funciona.html">Como funciona</a>
+          <a href="criar-evento.html">Criar evento</a>
+          <a href="enviar-fotos.html" class="nav-cta">Enviar fotos</a>
+        </nav>
+        <button class="menu-toggle" id="menuToggle">☰</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="section">
+        <div class="container">
+          <h1 class="section-title">Crie seu evento</h1>
+          <p class="section-subtitle">
+            Preencha os dados abaixo para gerar o código do evento e o link que
+            você vai enviar para os convidados.
+          </p>
+
+          <div class="form-card">
+            <form id="createEventForm">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label for="eventName">Nome do evento</label>
+                  <input
+                    type="text"
+                    id="eventName"
+                    name="eventName"
+                    placeholder="Ex: 15 anos da Larissa"
+                    required
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label for="eventDate">Data do evento</label>
+                  <input type="date" id="eventDate" name="eventDate" required />
+                </div>
+
+                <div class="form-field">
+                  <label for="hostName">Nome do anfitrião</label>
+                  <input
+                    type="text"
+                    id="hostName"
+                    name="hostName"
+                    placeholder="Seu nome"
+                    required
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label for="hostEmail">E-mail para contato</label>
+                  <input
+                    type="email"
+                    id="hostEmail"
+                    name="hostEmail"
+                    placeholder="voce@exemplo.com"
+                    required
+                  />
+                </div>
+
+                <div class="form-field full">
+                  <label for="eventCode">Código do evento</label>
+                  <div class="code-row">
+                    <input
+                      type="text"
+                      id="eventCode"
+                      name="eventCode"
+                      readonly
+                      placeholder="Clique em gerar código"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-outline small-btn"
+                      id="generateCodeButton"
+                    >
+                      Gerar código
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-outline small-btn"
+                      id="copyCodeButton"
+                    >
+                      Copiar
+                    </button>
+                  </div>
+                  <p class="field-hint">
+                    Esse é o código que os convidados vão usar para enviar as
+                    fotos do evento.
+                  </p>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  Salvar evento
+                </button>
+                <span id="createEventStatus" class="form-status"></span>
+              </div>
+            </form>
+          </div>
+
+          <div class="form-card" id="eventLinkBox" style="display: none">
+            <h2 class="form-title">Link para enviar aos convidados</h2>
+            <p class="field-hint">
+              Copie esse link e envie por WhatsApp, convite digital ou QR Code.
+            </p>
+            <div class="code-row">
+              <input type="text" id="eventPublicLink" readonly />
+              <button
+                type="button"
+                class="btn btn-outline small-btn"
+                id="copyLinkButton"
+              >
+                Copiar link
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER (igual ao da home) -->
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div class="footer-column">
+          <div class="logo">FotoFesta</div>
+          <p class="footer-text">
+            Transformando fotos em memórias eternas. Sua plataforma para
+            compartilhar e colecionar fotos de eventos.
+          </p>
+        </div>
+        <div class="footer-column">
+          <h4>Links úteis</h4>
+          <a href="como-funciona.html">Como funciona</a>
+          <a href="criar-evento.html">Criar evento</a>
+          <a href="enviar-fotos.html">Enviar fotos</a>
+        </div>
+        <div class="footer-column">
+          <h4>Contato</h4>
+          <p>Tem dúvidas? Fale com a gente:</p>
+          <a href="mailto:contato@fotofesta.com">contato@fotofesta.com</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © 2025 FotoFesta. Todos os direitos reservados.
+      </div>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>
