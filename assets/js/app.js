@@ -1,247 +1,330 @@
-// ============================
-// MENU MOBILE
-// ============================
-const menuToggle = document.getElementById("menuToggle");
-const nav = document.querySelector(".nav");
+// ======== FUNÇÕES HELPERS ========
 
-if (menuToggle && nav) {
-  menuToggle.addEventListener("click", () => {
-    nav.classList.toggle("open");
-  });
-}
-
-// ============================
-// HELPER PARA QUERYSTRING
-// ============================
-function getQueryParam(name) {
+// extrai parâmetro da URL
+function getQueryParam(param) {
   const params = new URLSearchParams(window.location.search);
-  return params.get(name);
+  return params.get(param);
 }
 
-// ============================
-// ACESSO DO ANFITRIÃO
-// ============================
-const HOST_ACCESS_CODE = "VXLARI";
+// ======== SENHA DO ANFITRIÃO (CONFIGURAÇÃO DO DONO DO SITE) ========
+const HOST_PASSWORD = "XVLARI2025"; // troque se quiser
 
-const hostAccessForm = document.getElementById("hostAccessForm");
-const hostAccessCodeInput = document.getElementById("hostAccessCode");
-const hostAccessStatus = document.getElementById("hostAccessStatus");
+// ======== URL DO WEBHOOK DO MAKE PARA ENVIAR FOTOS ========
+// 👉 COLE AQUI A URL QUE O MAKE TE DEU
+const MAKE_WEBHOOK_URL = "https://hook.eu2.make.com/jybiyv0upp6g9ku76ayz6wi52cixl685";
 
-if (hostAccessForm && hostAccessCodeInput) {
-  hostAccessForm.addEventListener("submit", (e) => {
-    e.preventDefault();
+// cria elemento do preview da lista de arquivos + miniaturas
+function renderFilePreview(files, listElement, labelElement, galleryElement) {
+  if (!listElement || !labelElement || !galleryElement) return;
 
-    const code = hostAccessCodeInput.value.trim();
-    if (!code) return;
+  listElement.innerHTML = "";
+  galleryElement.innerHTML = "";
 
-    if (code === HOST_ACCESS_CODE) {
-      // marca no localStorage que o anfitrião passou pelo código
-      localStorage.setItem("photofesta_host_auth", "ok");
+  if (!files || files.length === 0) {
+    labelElement.style.display = "none";
+    return;
+  }
 
-      hostAccessStatus.textContent = "Tudo certo! Redirecionando...";
-      hostAccessStatus.style.color = "#0b7a30";
+  labelElement.style.display = "block";
 
-      setTimeout(() => {
-        window.location.href = "criar-evento.html";
-      }, 700);
+  Array.from(files).forEach((file) => {
+    const sizeKB = Math.round(file.size / 1024);
+
+    // linha de texto
+    const li = document.createElement("li");
+    li.textContent = `${file.name} (${sizeKB} KB)`;
+    listElement.appendChild(li);
+
+    // miniatura
+    const item = document.createElement("div");
+    item.className = "gallery-item";
+
+    const url = URL.createObjectURL(file);
+
+    if (file.type.startsWith("image/")) {
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = file.name;
+      item.appendChild(img);
+    } else if (file.type.startsWith("video/")) {
+      const video = document.createElement("video");
+      video.src = url;
+      video.muted = true;
+      video.playsInline = true;
+      video.autoplay = false;
+      item.appendChild(video);
     } else {
-      hostAccessStatus.textContent =
-        "Código inválido. Confira com a Photo&Festa ou tente novamente.";
-      hostAccessStatus.style.color = "#b3261e";
+      // outros tipos (ex: zip) – mostra só um quadradinho
+      const span = document.createElement("span");
+      span.textContent = "Arquivo";
+      item.appendChild(span);
     }
+
+    galleryElement.appendChild(item);
   });
 }
 
-// ============================
-// CRIAR EVENTO / GERAR CÓDIGO
-// ============================
-const generateCodeButton = document.getElementById("generateCodeButton");
-const copyCodeButton = document.getElementById("copyCodeButton");
-const copyLinkButton = document.getElementById("copyLinkButton");
-const eventCodeInput = document.getElementById("eventCode");
-const createEventForm = document.getElementById("createEventForm");
-const statusSpan = document.getElementById("createEventStatus");
-const eventLinkBox = document.getElementById("eventLinkBox");
-const eventPublicLinkInput = document.getElementById("eventPublicLink");
+// ======== MENU MOBILE ========
+document.addEventListener("DOMContentLoaded", () => {
+  const menuToggle = document.getElementById("menuToggle");
+  const nav = document.querySelector(".nav");
 
-// se estiver na página de criar evento, checa se o anfitrião se autenticou
-if (createEventForm) {
-  const isAuthed = localStorage.getItem("photofesta_host_auth") === "ok";
+  if (menuToggle && nav) {
+    menuToggle.addEventListener("click", () => {
+      nav.classList.toggle("open");
+    });
+  }
+});
 
-  if (!isAuthed) {
-    window.location.href = "acesso-anfitriao.html";
+// ======== PÁGINA "ENVIAR FOTOS" ========
+
+document.addEventListener("DOMContentLoaded", () => {
+  const heroEventCode  = document.getElementById("heroEventCode");
+  const uploadForm     = document.getElementById("uploadForm");
+  const uploadStatus   = document.getElementById("uploadStatus");
+  const guestNameInput = document.getElementById("guestName");
+  const fileInput      = document.getElementById("fileInput");
+  const fileListEl     = document.getElementById("fileList");
+  const previewLabel   = document.getElementById("previewLabel");
+  const dropArea       = document.getElementById("dropArea");
+  const addMoreButton  = document.getElementById("addMoreFilesButton");
+  const galleryPreview = document.getElementById("galleryPreview");
+
+  // preenche o código do evento no topo
+  if (heroEventCode) {
+    const code = getQueryParam("codigo_evento");
+    heroEventCode.textContent = code || "—";
   }
 
-  createEventForm.addEventListener("submit", (e) => {
-    e.preventDefault();
+  // preview dos arquivos ao selecionar
+  if (fileInput && fileListEl && previewLabel && galleryPreview) {
+    fileInput.addEventListener("change", () => {
+      renderFilePreview(fileInput.files, fileListEl, previewLabel, galleryPreview);
+    });
+  }
 
-    // garante que exista um código
-    if (!eventCodeInput.value) {
-      eventCodeInput.value = generateEventCode();
-    }
+  // clique no dropzone abre seletor
+  if (dropArea && fileInput) {
+    dropArea.addEventListener("click", () => fileInput.click());
 
-    const code = eventCodeInput.value;
-
-    // =========================
-    // monta o link público (funciona local e no GitHub Pages)
-    // =========================
-    let baseUrl;
-
-    // Se estiver rodando localmente (127.0.0.1 ou localhost)
-    if (
-      window.location.hostname === "127.0.0.1" ||
-      window.location.hostname === "localhost"
-    ) {
-      // Live Server normalmente já está na raiz do projeto
-      baseUrl = window.location.origin;
-    } else {
-      // Em produção (GitHub Pages) precisa do nome do repositório
-      baseUrl = window.location.origin + "/photofesta-site";
-    }
-
-    const publicLink = `${baseUrl}/enviar-fotos.html?evento=${encodeURIComponent(
-      code
-    )}`;
-
-    if (eventPublicLinkInput && eventLinkBox) {
-      eventPublicLinkInput.value = publicLink;
-      eventLinkBox.style.display = "block";
-    }
-
-    // ====== SALVA DADOS DO EVENTO NO LOCALSTORAGE ======
-    const eventNameInput = document.getElementById("eventName");
-    const hostNameInput = document.getElementById("hostName");
-
-    const eventName = eventNameInput?.value.trim() || "";
-    const hostName = hostNameInput?.value.trim() || "";
-
-    try {
-      const raw = localStorage.getItem("fotofesta_events") || "[]";
-      const events = JSON.parse(raw);
-
-      // remove registro anterior com mesmo código (se existir)
-      const filtered = events.filter((ev) => ev.code !== code);
-
-      filtered.push({
-        code,
-        eventName,
-        hostName,
-        createdAt: new Date().toISOString(),
+    ["dragenter", "dragover"].forEach((event) => {
+      dropArea.addEventListener(event, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.classList.add("dragover");
       });
+    });
 
-      localStorage.setItem("fotofesta_events", JSON.stringify(filtered));
-    } catch (err) {
-      console.error("Erro ao salvar evento:", err);
-    }
-    // ============================================
+    ["dragleave", "drop"].forEach((event) => {
+      dropArea.addEventListener(event, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.classList.remove("dragover");
+      });
+    });
 
-    if (statusSpan) {
-      statusSpan.textContent =
-        "Evento salvo localmente. Envie o link abaixo para os convidados.";
-      statusSpan.style.color = "#0b7a30";
-    }
-  });
-}
-
-// gera um código baseado no nome do evento
-function generateEventCode() {
-  const nameInput = document.getElementById("eventName");
-  const name = (nameInput?.value || "EVENTO").trim();
-
-  const prefix =
-    name
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-zA-Z0-9]/g, "")
-      .toUpperCase()
-      .slice(0, 5) || "EVENTO";
-
-  const randomPart = Math.floor(1000 + Math.random() * 9000); // 4 dígitos
-  return `${prefix}-${randomPart}`;
-}
-
-if (generateCodeButton && eventCodeInput) {
-  generateCodeButton.addEventListener("click", () => {
-    const code = generateEventCode();
-    eventCodeInput.value = code;
-    if (statusSpan) {
-      statusSpan.textContent = "Código gerado! Agora salve o evento.";
-      statusSpan.style.color = "#6e5b75";
-    }
-  });
-}
-
-if (copyCodeButton && eventCodeInput) {
-  copyCodeButton.addEventListener("click", async () => {
-    if (!eventCodeInput.value) return;
-    await navigator.clipboard.writeText(eventCodeInput.value);
-    if (statusSpan) {
-      statusSpan.textContent = "Código copiado!";
-      statusSpan.style.color = "#0b7a30";
-    }
-  });
-}
-
-if (copyLinkButton && eventPublicLinkInput) {
-  copyLinkButton.addEventListener("click", async () => {
-    if (!eventPublicLinkInput.value) return;
-    await navigator.clipboard.writeText(eventPublicLinkInput.value);
-    if (statusSpan) {
-      statusSpan.textContent = "Link copiado!";
-      statusSpan.style.color = "#0b7a30";
-    }
-  });
-}
-
-// ============================
-// PÁGINA ENVIAR FOTOS – HERO
-// ============================
-(function configurarUploadHero() {
-  // Só roda se estiver na página de envio
-  const uploadHero = document.querySelector(".upload-hero");
-  const heroCodeEl = document.getElementById("heroEventCode");
-  const heroSubEl = document.querySelector(".upload-hero-subtitle");
-
-  if (!uploadHero) return; // não está nessa página
-
-  // Lê o código do evento da URL
-  const eventCode = getQueryParam("evento");
-
-  if (eventCode && heroCodeEl) {
-    heroCodeEl.textContent = eventCode;
-  }
-
-  try {
-    const raw = localStorage.getItem("fotofesta_events") || "[]";
-    const events = JSON.parse(raw);
-    const found = events.find((ev) => ev.code === eventCode);
-
-    if (found) {
-      // monta o "slug" do anfitrião para bater com o nome do arquivo
-      const hostSlug =
-        (found.hostName || "")
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .replace(/[^a-zA-Z0-9]/g, "")
-          .toLowerCase() || "default-event";
-
-      // define a imagem de fundo
-      uploadHero.style.backgroundImage =
-        `linear-gradient(120deg, rgba(0,0,0,.55), rgba(0,0,0,.25)), url("assets/img/${hostSlug}.jpg")`;
-      uploadHero.style.backgroundSize = "cover";
-      uploadHero.style.backgroundPosition = "center";
-
-      if (heroSubEl && found.hostName) {
-        heroSubEl.textContent = `Compartilhe as melhores fotos do evento de ${found.hostName}.`;
+    // soltar arquivos no Drop Area
+    dropArea.addEventListener("drop", (e) => {
+      const droppedFiles = e.dataTransfer.files;
+      if (droppedFiles.length) {
+        fileInput.files = droppedFiles;
+        renderFilePreview(droppedFiles, fileListEl, previewLabel, galleryPreview);
       }
-    } else {
-      // se não achar o evento, usa uma imagem padrão
-      uploadHero.style.backgroundImage =
-        'linear-gradient(120deg, rgba(0,0,0,.55), rgba(0,0,0,.25)), url("assets/img/default-event.jpg")';
-      uploadHero.style.backgroundSize = "cover";
-      uploadHero.style.backgroundPosition = "center";
-    }
-  } catch (err) {
-    console.error("Erro ao configurar hero de upload:", err);
+    });
   }
-})();
+
+  // botão "Adicionar mais fotos"
+  if (addMoreButton && fileInput) {
+    addMoreButton.addEventListener("click", () => fileInput.click());
+  }
+
+  // validação e envio do form para o MAKE (webhook)
+  if (uploadForm && fileInput && uploadStatus && guestNameInput) {
+    uploadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const eventCode = getQueryParam("codigo_evento");
+      const guestName = guestNameInput.value.trim();
+      const files = fileInput.files;
+
+      // validações
+      if (!eventCode) {
+        uploadStatus.textContent = "❗ Código do evento não encontrado na URL.";
+        uploadStatus.style.color = "#ff6b6b";
+        return;
+      }
+
+      if (!guestName) {
+        uploadStatus.textContent = "❗ Digite seu nome antes de enviar.";
+        uploadStatus.style.color = "#ff6b6b";
+        return;
+      }
+
+      if (!files || files.length === 0) {
+        uploadStatus.textContent = "❗ Selecione ao menos 1 foto ou vídeo.";
+        uploadStatus.style.color = "#ff6b6b";
+        return;
+      }
+
+      try {
+        uploadStatus.textContent = "Enviando arquivos... ⏳";
+        uploadStatus.style.color = "#6e5b75";
+
+        const formData = new FormData();
+        formData.append("codigo_evento", eventCode);
+        formData.append("guest_name", guestName);
+
+        Array.from(files).forEach((file) => {
+          formData.append("files[]", file, file.name);
+        });
+
+        const response = await fetch(MAKE_WEBHOOK_URL, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Erro no webhook");
+        }
+
+        uploadStatus.textContent =
+          "💜 Arquivos enviados com sucesso! Obrigado por participar!";
+        uploadStatus.style.color = "#1b8f4b";
+
+        // limpa o form após 4s
+        setTimeout(() => {
+          uploadForm.reset();
+          uploadStatus.textContent = "";
+          if (fileListEl) fileListEl.innerHTML = "";
+          if (previewLabel) previewLabel.style.display = "none";
+          if (galleryPreview) galleryPreview.innerHTML = "";
+        }, 4000);
+      } catch (err) {
+        console.error(err);
+        uploadStatus.textContent =
+          "❗ Ocorreu um erro ao enviar. Tente novamente em instantes.";
+        uploadStatus.style.color = "#ff6b6b";
+      }
+    });
+  }
+});
+
+// ======== PÁGINA "ACESSO DO ANFITRIÃO" ========
+document.addEventListener("DOMContentLoaded", () => {
+  const hostForm = document.getElementById("hostAccessForm");
+  const hostStatus = document.getElementById("hostAccessStatus");
+
+  if (hostForm) {
+    hostForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const input = document.getElementById("hostAccessCode");
+      const code = (input.value || "").trim();
+
+      if (code === HOST_PASSWORD) {
+        hostStatus.textContent = "Acesso liberado ✅";
+        hostStatus.className = "form-status is-success";
+
+        setTimeout(() => {
+          window.location.href = "criar-evento.html";
+        }, 1200);
+      } else {
+        hostStatus.textContent = "Senha inválida ❗";
+        hostStatus.className = "form-status is-error";
+      }
+    });
+  }
+});
+
+// ======== PÁGINA "CRIAR EVENTO" – GERAR CÓDIGO E LINK =========
+document.addEventListener("DOMContentLoaded", () => {
+  const generateBtn   = document.getElementById("generateCodeButton");
+  const copyBtn       = document.getElementById("copyCodeButton");
+  const codeInput     = document.getElementById("eventCode");
+  const createForm    = document.getElementById("createEventForm");
+  const statusEl      = document.getElementById("createEventStatus");
+  const linkBox       = document.getElementById("eventLinkBox");
+  const linkInput     = document.getElementById("eventPublicLink");
+
+  if (!generateBtn || !codeInput) return; // não está na página de criar evento
+
+  function generateEventCode() {
+    const nameInput = document.getElementById("eventName");
+    const rawName = (nameInput?.value || "")
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "");
+    const prefix = rawName.substring(0, 4) || "EVNT";
+
+    const random = Math.floor(1000 + Math.random() * 9000);
+    const code = `${prefix}-${random}`;
+
+    codeInput.value = code;
+  }
+
+  generateBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    generateEventCode();
+
+    if (statusEl) {
+      statusEl.textContent = "Código do evento gerado ✔";
+      statusEl.style.color = "#1b8f4b";
+    }
+  });
+
+  if (copyBtn) {
+    copyBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      if (!codeInput.value) {
+        if (statusEl) {
+          statusEl.textContent = "Gere o código antes de copiar.";
+          statusEl.style.color = "#d62839";
+        }
+        return;
+      }
+
+      navigator.clipboard.writeText(codeInput.value).then(() => {
+        if (statusEl) {
+          statusEl.textContent = "Código copiado para a área de transferência ✔";
+          statusEl.style.color = "#1b8f4b";
+          setTimeout(() => (statusEl.textContent = ""), 2500);
+        }
+      });
+    });
+  }
+
+  if (createForm) {
+    createForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      if (!codeInput.value) {
+        generateEventCode();
+      }
+
+      const code = codeInput.value;
+      if (!code) {
+        if (statusEl) {
+          statusEl.textContent = "Não foi possível gerar o código do evento.";
+          statusEl.style.color = "#d62839";
+        }
+        return;
+      }
+
+      const publicUrl = `${window.location.origin}/enviar-fotos.html?codigo_evento=${encodeURIComponent(
+        code
+      )}`;
+
+      if (linkInput) {
+        linkInput.value = publicUrl;
+      }
+      if (linkBox) {
+        linkBox.style.display = "block";
+      }
+      if (statusEl) {
+        statusEl.textContent =
+          "Evento salvo (simulado). Copie o link abaixo para enviar aos convidados.";
+        statusEl.style.color = "#1b8f4b";
+      }
+    });
+  }
+});

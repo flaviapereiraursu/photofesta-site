@@ -1,59 +1,177 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Enviar Fotos – FotoFesta</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="assets/css/styles.css" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <title>Enviar fotos – Photo&Festa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <body>
-    <!-- HEADER -->
-    <header class="header">
-      <div class="container header-inner">
-        <div class="logo">FotoFesta</div>
-        <nav class="nav">
-          <a href="index.html">Início</a>
-          <a href="como-funciona.html">Como Funciona</a>
-          <a href="acesso-anfitriao.html">Criar Evento</a>
-          <a href="enviar-fotos.html" class="nav-cta">Enviar Fotos</a>
-        </nav>
-        <button class="menu-toggle" id="menuToggle">☰</button>
+  <!-- Fonte -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- CSS global + página -->
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo">Photo&Festa</div>
+
+      <nav class="nav">
+        <a href="index.html">Início</a>
+        <a href="como-funciona.html">Como funciona</a>
+        <a href="acesso-anfitriao.html">Criar evento</a>
+        <a href="acesso-convidado.html" class="nav-cta">Enviar fotos</a>
+      </nav>
+
+      <button class="menu-toggle" id="menuToggle">☰</button>
+    </div>
+  </header>
+
+  <!-- MAIN – LAYOUT DIVIDIDO -->
+  <main class="upload-layout">
+    <div class="container upload-grid">
+      <!-- COLUNA ESQUERDA – FOTO DO EVENTO -->
+      <section class="upload-left">
+        <div class="upload-photo-card">
+          <!-- FOTO DO ANIVERSARIANTE / EVENTO -->
+          <img
+            src="assets/img/larissa.jpg"
+            alt="Foto do evento"
+            class="upload-photo-img"
+          />
+
+          <div class="upload-photo-overlay">
+            <p class="upload-left-text">
+              <!-- (Opcional) texto em cima da foto, se quiser -->
+            </p>
+
+            <div class="upload-left-badges">
+              <!-- (Opcional) botões / badges em cima da foto -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COLUNA DIREITA – TÍTULO + CARDS -->
+      <section class="upload-right">
+        <header class="upload-header">
+          <h1 class="upload-title">Enviar Fotos</h1>
+          <p class="upload-subtitle">
+            Compartilhe suas melhores fotos do evento.
+          </p>
+          <p class="upload-code">
+            Enviando fotos para o evento:
+            <span id="heroEventCode">—</span>
+          </p>
+        </header>
+
+        <!-- FORM ENVOLVENDO OS DOIS CARDS -->
+        <form id="uploadForm" class="upload-form">
+          <!-- CARD 1 – DADOS DO CONVIDADO -->
+          <div class="upload-card guest-card">
+            <h2 class="card-title">Dados do Convidado</h2>
+
+            <div class="form-group">
+              <input
+                type="text"
+                id="guestName"
+                name="guestName"
+                placeholder="Digite seu nome"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- CARD 2 – ÁREA DE UPLOAD -->
+          <div class="upload-card area-card">
+            <h2 class="card-title">Área de upload</h2>
+
+            <!-- Área de arrastar / clicar -->
+            <div class="upload-dropzone" id="dropArea">
+              <input
+                type="file"
+                id="fileInput"
+                name="files[]"
+                multiple
+                accept="image/*,video/*"
+              />
+              <div class="dropzone-inner">
+                <div class="drop-icon">⬆️</div>
+                <p class="drop-title">
+                  Arraste suas fotos ou clique para selecionar
+                </p>
+                <p class="drop-support">
+                  Formatos aceitos: JPG, PNG, GIF, MP4
+                </p>
+              </div>
+            </div>
+
+            <!-- NOME DOS ARQUIVOS SELECIONADOS -->
+            <p id="previewLabel" class="preview-label" style="display: none;">
+              Arquivos selecionados:
+            </p>
+            <ul id="fileList" class="file-list"></ul>
+            <!-- Miniaturas (galeria local) -->
+            <div id="galleryPreview" class="gallery-grid"></div>
+
+            <div class="upload-actions">
+              <button
+                type="button"
+                class="btn btn-outline"
+                id="addMoreFilesButton"
+              >
+                Adicionar mais fotos
+              </button>
+
+              <button type="submit" class="btn btn-primary">
+                Enviar fotos
+              </button>
+            </div>
+
+            <p id="uploadStatus" class="upload-status"></p>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-column">
+        <div class="logo">Photo&Festa</div>
+        <p class="footer-text">
+          Transformando fotos em memórias eternas. Sua plataforma para
+          compartilhar e colecionar fotos de eventos.
+        </p>
       </div>
-    </header>
 
-    <!-- HERO COM IMAGEM DO ANFITRIÃO -->
-    <section class="upload-hero">
-      <div class="upload-hero-overlay">
-        <h1 class="upload-hero-title">Enviar Fotos</h1>
-        <p class="upload-hero-sub">Compartilhe suas melhores fotos do evento.</p>
+      <div class="footer-column">
+        <h4>Links úteis</h4>
+        <a href="como-funciona.html">Como funciona</a>
+        <a href="acesso-anfitriao.html">Criar evento</a>
+        <a href="acesso-convidado.html">Enviar fotos</a>
       </div>
-    </section>
 
-    <!-- CARD IGUAL AO MODELO -->
-    <main class="upload-wrapper">
-      <div class="upload-card">
-        <h2 class="upload-card-title">
-          Enviando fotos para o evento: <span id="heroEventCode"></span>
-        </h2>
-        <p class="upload-card-sub">Compartilhe seus melhores momentos da festa!</p>
-
-        <label class="upload-area" id="dropArea">
-          <div class="upload-icon">⬆️</div>
-          <p class="upload-area-title">Arraste suas fotos ou clique para selecionar</p>
-          <p class="upload-area-sub">Formatos aceitos: JPG, PNG, GIF</p>
-
-          <input type="file" id="fileInput" multiple accept="image/*" />
-        </label>
-
-        <button class="upload-btn">Enviar fotos</button>
+      <div class="footer-column">
+        <h4>Contato</h4>
+        <p>Tem dúvidas? Fale com a gente:</p>
+        <a href="mailto:contato@photoefesta.com.br">
+          contato@photoefesta.com.br
+        </a>
       </div>
-    </main>
+    </div>
 
-    <script src="assets/js/app.js"></script>
-  </body>
+    <div class="footer-bottom">
+      © 2025 Photo&Festa. Todos os direitos reservados.
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script src="assets/js/app.js"></script>
+</body>
 </html>

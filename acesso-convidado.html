@@ -2,12 +2,17 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <title>Acesso do anfitrião – Photo&Festa</title>
+    <title>Acesso do convidado – Photo&Festa</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
     <link rel="stylesheet" href="assets/css/styles.css" />
   </head>
   <body>
@@ -15,50 +20,56 @@
     <header class="header">
       <div class="container header-inner">
         <div class="logo">Photo&Festa</div>
+
         <nav class="nav">
           <a href="index.html">Início</a>
           <a href="como-funciona.html">Como funciona</a>
           <a href="acesso-anfitriao.html">Criar evento</a>
           <a href="acesso-convidado.html" class="nav-cta">Enviar fotos</a>
         </nav>
-        <button class="menu-toggle" id="menuToggle">☰</button>
+
+        <button class="menu-toggle" id="menuToggle">
+          ☰
+        </button>
       </div>
     </header>
 
-    <main>
-      <section class="section host-access-section">
-        <div class="container">
-          <h1 class="section-title">Acesso do anfitrião</h1>
-          <p class="section-subtitle">
-            Digite o código de anfitrião para acessar a página de criação de eventos.
-          </p>
+    <main class="section">
+      <div class="container">
+        <h1 class="section-title">Acesso do convidado</h1>
+        <p class="section-subtitle">
+          Digite o código do evento que o anfitrião compartilhou com você para
+          enviar suas fotos.
+        </p>
 
-          <div class="form-card access-card">
-            <form id="hostAccessForm">
-              <div class="form-field full">
-                <label for="hostAccessCode">Código do anfitrião</label>
-                <input
-                  type="password"
-                  id="hostAccessCode"
-                  name="hostAccessCode"
-                  placeholder="Digite o código fornecido pela Photo&Festa"
-                  required
-                />
-                <p class="field-hint">
-                  Esse código é exclusivo para quem gerencia os eventos.
-                </p>
-              </div>
+        <div class="form-card access-card">
+          <form id="guestAccessForm">
+            <div class="form-field">
+              <label for="guestCode">Código do evento</label>
+              <input
+                type="text"
+                id="guestCode"
+                name="guestCode"
+                placeholder="Ex: XVDAL-7377"
+                required
+              />
+              <p class="field-hint">
+                Você encontra esse código no convite digital ou no telão do evento.
+              </p>
+            </div>
 
-              <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Entrar</button>
-                <span id="hostAccessStatus" class="form-status"></span>
-              </div>
-            </form>
-          </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">
+                Continuar
+              </button>
+              <span id="guestAccessStatus" class="form-status"></span>
+            </div>
+          </form>
         </div>
-      </section>
+      </div>
     </main>
 
+    <!-- FOOTER -->
     <footer class="footer">
       <div class="container footer-inner">
         <div class="footer-column">
@@ -68,18 +79,23 @@
             compartilhar e colecionar fotos de eventos.
           </p>
         </div>
+
         <div class="footer-column">
           <h4>Links úteis</h4>
           <a href="como-funciona.html">Como funciona</a>
           <a href="acesso-anfitriao.html">Criar evento</a>
           <a href="acesso-convidado.html">Enviar fotos</a>
         </div>
+
         <div class="footer-column">
           <h4>Contato</h4>
           <p>Tem dúvidas? Fale com a gente:</p>
-          <a href="mailto:contato@photoefesta.com.br">contato@photoefesta.com.br</a>
+          <a href="mailto:contato@photoefesta.com.br"
+            >contato@photoefesta.com.br</a
+          >
         </div>
       </div>
+
       <div class="footer-bottom">
         © 2025 Photo&Festa. Todos os direitos reservados.
       </div>
@@ -88,4 +104,3 @@
     <script src="assets/js/app.js"></script>
   </body>
 </html>
-
