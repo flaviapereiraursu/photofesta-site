@@ -90,16 +90,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const addMoreButton  = document.getElementById("addMoreFilesButton");
   const galleryPreview = document.getElementById("galleryPreview");
 
-  // preenche o código do evento no topo
+  // vamos manter os arquivos aqui, independente se foi clique ou drag&drop
+  let selectedFiles = [];
+
+  // código do evento no topo
   if (heroEventCode) {
     const code = getQueryParam("codigo_evento");
     heroEventCode.textContent = code || "—";
   }
 
-  // preview dos arquivos ao selecionar
+  // quando selecionar arquivos pelo input
   if (fileInput && fileListEl && previewLabel && galleryPreview) {
     fileInput.addEventListener("change", () => {
-      renderFilePreview(fileInput.files, fileListEl, previewLabel, galleryPreview);
+      selectedFiles = Array.from(fileInput.files);
+      renderFilePreview(selectedFiles, fileListEl, previewLabel, galleryPreview);
     });
   }
 
@@ -125,10 +129,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // soltar arquivos no Drop Area
     dropArea.addEventListener("drop", (e) => {
-      const droppedFiles = e.dataTransfer.files;
+      const droppedFiles = Array.from(e.dataTransfer.files);
       if (droppedFiles.length) {
-        fileInput.files = droppedFiles;
-        renderFilePreview(droppedFiles, fileListEl, previewLabel, galleryPreview);
+        // soma com o que já tinha, se quiser manter todos
+        selectedFiles = selectedFiles.concat(droppedFiles);
+        renderFilePreview(selectedFiles, fileListEl, previewLabel, galleryPreview);
       }
     });
   }
@@ -138,14 +143,13 @@ document.addEventListener("DOMContentLoaded", () => {
     addMoreButton.addEventListener("click", () => fileInput.click());
   }
 
-  // validação e envio do form para o MAKE (webhook)
-  if (uploadForm && fileInput && uploadStatus && guestNameInput) {
+  // envio para o MAKE
+  if (uploadForm && uploadStatus && guestNameInput) {
     uploadForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const eventCode = getQueryParam("codigo_evento");
       const guestName = guestNameInput.value.trim();
-      const files = fileInput.files;
 
       // validações
       if (!eventCode) {
@@ -160,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      if (!files || files.length === 0) {
+      if (!selectedFiles || selectedFiles.length === 0) {
         uploadStatus.textContent = "❗ Selecione ao menos 1 foto ou vídeo.";
         uploadStatus.style.color = "#ff6b6b";
         return;
@@ -174,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("codigo_evento", eventCode);
         formData.append("guest_name", guestName);
 
-        Array.from(files).forEach((file) => {
+        selectedFiles.forEach((file) => {
           formData.append("files[]", file, file.name);
         });
 
@@ -191,9 +195,9 @@ document.addEventListener("DOMContentLoaded", () => {
           "💜 Arquivos enviados com sucesso! Obrigado por participar!";
         uploadStatus.style.color = "#1b8f4b";
 
-        // limpa o form após 4s
         setTimeout(() => {
           uploadForm.reset();
+          selectedFiles = [];
           uploadStatus.textContent = "";
           if (fileListEl) fileListEl.innerHTML = "";
           if (previewLabel) previewLabel.style.display = "none";
@@ -208,32 +212,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
 // ======== PÁGINA "ACESSO DO ANFITRIÃO" ========
 document.addEventListener("DOMContentLoaded", () => {
   const hostForm = document.getElementById("hostAccessForm");
   const hostStatus = document.getElementById("hostAccessStatus");
 
-  if (hostForm) {
-    hostForm.addEventListener("submit", (e) => {
-      e.preventDefault();
+  if (!hostForm) return; // se não está nessa página, sai
 
-      const input = document.getElementById("hostAccessCode");
-      const code = (input.value || "").trim();
+  hostForm.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-      if (code === HOST_PASSWORD) {
-        hostStatus.textContent = "Acesso liberado ✅";
-        hostStatus.className = "form-status is-success";
+    const input = document.getElementById("hostAccessCode");
+    const code = (input.value || "").trim();
 
-        setTimeout(() => {
-          window.location.href = "criar-evento.html";
-        }, 1200);
-      } else {
-        hostStatus.textContent = "Senha inválida ❗";
-        hostStatus.className = "form-status is-error";
-      }
-    });
-  }
+    if (code === HOST_PASSWORD) {
+      hostStatus.textContent = "Acesso liberado ✅";
+      hostStatus.className = "form-status is-success";
+
+      setTimeout(() => {
+        // se acesso-anfitriao.html e criar-evento.html
+        // estão na mesma pasta:
+        window.location.href = "criar-evento.html";
+      }, 1200);
+    } else {
+      hostStatus.textContent = "Senha inválida ❗";
+      hostStatus.className = "form-status is-error";
+    }
+  });
 });
 
 // ======== PÁGINA "CRIAR EVENTO" – GERAR CÓDIGO E LINK =========
@@ -328,3 +333,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
